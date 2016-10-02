@@ -1,38 +1,52 @@
-#include "commons/MainLoop.h"
+#include "MainLoop.h"
+
+#include <SFML/System/Clock.hpp>
 
 MainLoop& MainLoop::getInstance() {
     static MainLoop instance;
     return instance;
 }
 
-void start();
-void pause();
-void resume();
-void exit();
-
-void MainLoop::LoopablesManager::moveLoopable(
-        MainLoop::Container& from, 
-        MainLoop::Container& to, 
-        std::shared_ptr<Loopable> loopable) {
-    from.erase(loopable);
-    to.insert(loopable);
+MainLoop::MainLoop() : 
+        running(false) {
 }
 
-void MainLoop::LoopablesManager::insertLoopable(
-        MainLoop::Container& to,
-        std::shared_ptr<Loopable> loopable) {
-    to.insert(loopable);
+void MainLoop::connect(
+        BasicEventType type, 
+        std::function<void (const BasicEventArgs&)> callback) {
+
+    events[size_t(type)].connect(callback);
 }
 
-void MainLoop::LoopablesManager::deleteLoopable(
-        MainLoop::Containter& from,
-        std::shared_ptr<Loopable> loopable) {
-    from.erase(loopable);
+void MainLoop::disconnect(
+        BasicEventType type, 
+        std::function<void (const BasicEventArgs&)> callback) {
+
+    events[size_t(type)].disconnect(callback);
 }
 
-void MainLoop::loopOnce() {
+void MainLoop::start() {
+    running = true;
+
+    events[size_t(BasicEventType::START)].signal({0});
+
+    sf::Clock game_timer;
     
+    for(sf::Clock frame_timer; running; frame_timer.restart()) {
+        loopOnce(
+            frame_timer.getElapsedTime().asMilliseconds(),
+            game_timer.getElapsedTime().asMilliseconds());
+    }
+
+    events[size_t(BasicEventType::STOP)].signal({game_timer.getElapsedTime().asMilliseconds()});
 }
 
+void MainLoop::stop() {
+    running = false;
+}
 
-MainLoop();
+void MainLoop::loopOnce(int frame_time, int game_time) {
+    events[size_t(BasicEventType::UPDATE)].signal({frame_time});
+    events[size_t(BasicEventType::DRAW)].signal({game_time});
+}
+

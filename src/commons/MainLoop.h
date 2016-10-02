@@ -8,43 +8,34 @@
 
 #pragma once
 
-#include <memory>
-#include <set>
+#include <functional>
 
-class Loopable;
+#include "event/EventType.h"
+#include "event/Event.h"
 
 class MainLoop {
     public:
         static MainLoop& getInstance();
-
-
+        
+        void connect(
+                BasicEventType type, 
+                std::function<void (const BasicEventArgs&)> callback);
+        void disconnect(
+                BasicEventType type, 
+                std::function<void (const BasicEventArgs&)> callback);
 
         void start();
-        void pause();
-        void resume();
-        void exit();
+        void stop();
     private:
-        void loopOnce();
+        void loopOnce(int frame_time, int game_time);
 
         MainLoop();
         MainLoop(const MainLoop&) = delete;
+    
+        bool running;
 
-        struct LoopableManager {
-            typedef std::set<std::shared_ptr<Loopable> > Container;
-            void moveLoopable(
-                    Container& from, 
-                    Container& to, 
-                    std::shared_ptr<Loopable> loopable);
-            void insertLoopable(
-                    Container& to, 
-                    std::shared_ptr<Loopable> loopable);
-            void deleteLoopable(
-                    Container& to, 
-                    std::shared_ptr<Loopable> loopable);
-            
-            Container active_loopables;
-            Container paused_loopables;
-        };
-
-        LoopableManager manager;
+        std::array<
+            Event, 
+            size_t(BasicEventType::COUNT)
+        > events;
 };
