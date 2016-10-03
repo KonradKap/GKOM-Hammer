@@ -22,6 +22,7 @@ class Loopable {
         virtual void onResume(const BasicEventArgs&) = 0;
         virtual void onStop  (const BasicEventArgs&) = 0;
         virtual void onUpdate(const BasicEventArgs&) = 0;
+        virtual void onDraw  (const BasicEventArgs&) = 0;
 };
 
 class LoopableAdapter : public Loopable {
@@ -30,8 +31,9 @@ class LoopableAdapter : public Loopable {
         virtual ~LoopableAdapter();
     private:
         virtual void onStart (const BasicEventArgs&) {} 
-        virtual void onUpdate(const BasicEventArgs&) {}
-        virtual void onResume(const BasicEventArgs&) {}
         virtual void onPause (const BasicEventArgs&) {} 
+        virtual void onResume(const BasicEventArgs&) {}
         virtual void onStop  (const BasicEventArgs&) {} 
+        virtual void onUpdate(const BasicEventArgs&) {}
+        virtual void onDraw  (const BasicEventArgs&) {}
 };

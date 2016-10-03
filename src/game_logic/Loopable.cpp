@@ -31,6 +31,10 @@ void Loopable::connect() {
             BasicEventType::RESUME, 
             this,
             &Loopable::onResume);
+    instance.connect(
+            BasicEventType::DRAW, 
+            this,
+            &Loopable::onDraw);
 }
 
 void Loopable::disconnect() {
@@ -56,6 +60,10 @@ void Loopable::disconnect() {
             BasicEventType::RESUME, 
             this,
             &Loopable::onResume);
+    instance.disconnect(
+            BasicEventType::DRAW, 
+            this,
+            &Loopable::onDraw);
 }
 
 LoopableAdapter::LoopableAdapter() :
