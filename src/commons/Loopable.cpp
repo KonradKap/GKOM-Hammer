@@ -12,20 +12,25 @@ void Loopable::connect() {
     auto& instance = MainLoop::getInstance();
 
     instance.connect(
-            BasicEventType::START, 
-            std::bind(&Loopable::onStart, this, _1));
+            BasicEventType::START,
+            this,
+            &Loopable::onStart);
     instance.connect(
-            BasicEventType::STOP, 
-            std::bind(&Loopable::onStop, this, _1));
+            BasicEventType::STOP,
+            this,
+            &Loopable::onStop);
     instance.connect(
-            BasicEventType::UPDATE, 
-            std::bind(&Loopable::onUpdate, this, _1));
+            BasicEventType::UPDATE,
+            this,
+            &Loopable::onUpdate);
     instance.connect(
             BasicEventType::PAUSE, 
-            std::bind(&Loopable::onPause, this, _1));
+            this,
+            &Loopable::onPause);
     instance.connect(
             BasicEventType::RESUME, 
-            std::bind(&Loopable::onResume, this, _1));
+            this,
+            &Loopable::onResume);
 }
 
 void Loopable::disconnect() {
@@ -33,19 +38,24 @@ void Loopable::disconnect() {
 
     instance.disconnect(
             BasicEventType::START, 
-            std::bind(&Loopable::onStart, this, _1));
+            this,
+            &Loopable::onStart);
     instance.disconnect(
             BasicEventType::STOP, 
-            std::bind(&Loopable::onStop, this, _1));
+            this,
+            &Loopable::onStop);
     instance.disconnect(
             BasicEventType::UPDATE, 
-            std::bind(&Loopable::onUpdate, this, _1));
+            this,
+            &Loopable::onUpdate);
     instance.disconnect(
             BasicEventType::PAUSE, 
-            std::bind(&Loopable::onPause, this, _1));
+            this,
+            &Loopable::onPause);
     instance.disconnect(
             BasicEventType::RESUME, 
-            std::bind(&Loopable::onResume, this, _1));
+            this,
+            &Loopable::onResume);
 }
 
 LoopableAdapter::LoopableAdapter() :

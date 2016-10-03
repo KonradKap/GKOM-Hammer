@@ -19,7 +19,7 @@ enum class BasicEventType {
     COUNT,
 };
 
-struct BasicEventArgs {
-    int frame_time;
+class BasicEventArgs {
+    public:
+        int frame_time;
 };
-

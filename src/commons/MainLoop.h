@@ -12,6 +12,13 @@
 
 #include "event/EventType.h"
 #include "event/Event.h"
+#include "Loopable.h"
+
+namespace sf {
+    class Clock;
+} //namespace sf
+
+typedef Event<Loopable, const BasicEventArgs&> BasicEvent;
 
 class MainLoop {
     public:
@@ -19,15 +26,17 @@ class MainLoop {
         
         void connect(
                 BasicEventType type, 
-                std::function<void (const BasicEventArgs&)> callback);
+                Loopable* caller,
+                BasicEvent::callback_function callback);
         void disconnect(
-                BasicEventType type, 
-                std::function<void (const BasicEventArgs&)> callback);
+                BasicEventType type,
+                Loopable* caller,
+                BasicEvent::callback_function callback);
 
         void start();
         void stop();
     private:
-        void loopOnce(int frame_time, int game_time);
+        void loopOnce(const sf::Clock& frame_time, const sf::Clock& game_time);
 
         MainLoop();
         MainLoop(const MainLoop&) = delete;
@@ -35,7 +44,7 @@ class MainLoop {
         bool running;
 
         std::array<
-            Event, 
+            BasicEvent,
             size_t(BasicEventType::COUNT)
         > events;
 };

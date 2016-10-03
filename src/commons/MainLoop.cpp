@@ -1,6 +1,11 @@
 #include "MainLoop.h"
 
+#include <iostream>
+
 #include <SFML/System/Clock.hpp>
+#include <SFML/System/Sleep.hpp>
+
+#include "../GameConstants.h"
 
 MainLoop& MainLoop::getInstance() {
     static MainLoop instance;
@@ -13,29 +18,31 @@ MainLoop::MainLoop() :
 
 void MainLoop::connect(
         BasicEventType type, 
-        std::function<void (const BasicEventArgs&)> callback) {
+        Loopable* caller,
+        BasicEvent::callback_function callback) {
 
-    events[size_t(type)].connect(callback);
+    events[size_t(type)].connect(caller, callback);
 }
 
 void MainLoop::disconnect(
         BasicEventType type, 
-        std::function<void (const BasicEventArgs&)> callback) {
+        Loopable* caller,
+        BasicEvent::callback_function callback) {
 
-    events[size_t(type)].disconnect(callback);
+    events[size_t(type)].disconnect(caller, callback);
 }
 
 void MainLoop::start() {
     running = true;
 
-    events[size_t(BasicEventType::START)].signal({0});
+    events[size_t(BasicEventType::START)].signal({});
 
     sf::Clock game_timer;
-    
-    for(sf::Clock frame_timer; running; frame_timer.restart()) {
-        loopOnce(
-            frame_timer.getElapsedTime().asMilliseconds(),
-            game_timer.getElapsedTime().asMilliseconds());
+    sf::Clock frame_timer;
+
+    while( running ) {
+        loopOnce(frame_timer, game_timer);
+        frame_timer.restart();
     }
 
     events[size_t(BasicEventType::STOP)].signal({game_timer.getElapsedTime().asMilliseconds()});
@@ -45,8 +52,13 @@ void MainLoop::stop() {
     running = false;
 }
 
-void MainLoop::loopOnce(int frame_time, int game_time) {
-    events[size_t(BasicEventType::UPDATE)].signal({frame_time});
-    events[size_t(BasicEventType::DRAW)].signal({game_time});
+void MainLoop::loopOnce(const sf::Clock& frame_timer, const sf::Clock& game_timer) {
+    const int GAME_TIME  = game_timer.getElapsedTime().asMilliseconds();
+
+    events[size_t(BasicEventType::UPDATE)].signal({FRAME_TIME_MSEC});
+    events[size_t(BasicEventType::DRAW)].signal({GAME_TIME});
+
+    const int FRAME_TIME = frame_timer.getElapsedTime().asMilliseconds();
+    sf::sleep(sf::milliseconds(FRAME_TIME_MSEC - FRAME_TIME));
 }
 
