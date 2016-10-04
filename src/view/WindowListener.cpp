@@ -1,6 +1,6 @@
 #include "WindowListener.h"
 
-void WindowListener::readSingleEvent(sf::Event event) const {
+void WindowListener::readSingleEvent(const sf::Event& event) const {
     switch(event.type) {
         case sf::Event::Closed:
             onClosed();
@@ -41,8 +41,4 @@ void WindowListener::readSingleEvent(sf::Event event) const {
 }
 
 WindowListener::~WindowListener() {
-}
-
-void WindowListener::setWindow(sf::RenderWindow* source) {
-    this->source = source;
 }

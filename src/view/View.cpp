@@ -4,9 +4,16 @@
 #include "../GameConstants.h"
 #include "WindowListener.h"
 
+const sf::Vector2i View::WINDOW{WINDOW_X, WINDOW_Y};
+
 View::View() : 
         window(sf::VideoMode(WINDOW_X, WINDOW_Y), GAME_TITLE),
         window_listener(nullptr) {
+}
+
+View::View(std::unique_ptr<WindowListener> listener) :
+        window(sf::VideoMode(WINDOW_X, WINDOW_Y), GAME_TITLE),
+        window_listener(std::move(listener)) {
 }
 
 View::~View() {

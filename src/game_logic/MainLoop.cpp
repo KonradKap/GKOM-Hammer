@@ -5,8 +5,6 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Sleep.hpp>
 
-#include "../GameConstants.h"
-
 MainLoop& MainLoop::getInstance() {
     static MainLoop instance;
     return instance;

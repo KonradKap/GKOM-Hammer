@@ -1,5 +1,5 @@
 #Compiler and Linker
-CC          := clang
+CC          := c++
 
 #The Target Binary Program
 TARGET      := game

@@ -22,6 +22,11 @@ typedef Event<Loopable, const BasicEventArgs&> BasicEvent;
 
 class MainLoop {
     public:
+        constexpr static const int TARGET_FPS  = 60;
+        constexpr static const double TARGET_FPMS = TARGET_FPS / 1000.;
+        constexpr static const double FRAME_TIME_SEC = 1. / TARGET_FPS;
+        constexpr static const int FRAME_TIME_MSEC = 1 / TARGET_FPMS;
+
         static MainLoop& getInstance();
         
         void connect(
