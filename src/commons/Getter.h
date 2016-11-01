@@ -62,7 +62,7 @@ template <>
             }
 
         template<template <class> class C, class T>
-            constexpr static const auto& const_primary(const C<T>& arg) {
+            constexpr static const auto& primary(const C<T>& arg) {
                 return static_cast<const T&(*)(const C<T>&)>(getX<T>)(arg);
             }
 
@@ -72,7 +72,7 @@ template <>
             }
 
         template<template <class> class C, class T>
-            constexpr static const auto& const_secondary(const C<T>& arg) {
+            constexpr static const auto& secondary(const C<T>& arg) {
                 return static_cast<const T&(*)(const C<T>&)>(getY<T>)(arg);
             }
     };
@@ -85,7 +85,7 @@ template <>
             }
 
         template<template <class> class C, class T>
-            constexpr static const auto& const_primary(const C<T>& arg) {
+            constexpr static const auto& primary(const C<T>& arg) {
                 return static_cast<const T&(*)(const C<T>&)>(getY<T>)(arg);
             }
 
@@ -95,8 +95,52 @@ template <>
             }
 
         template<template <class> class C, class T>
-            constexpr static const auto& const_secondary(const C<T>& arg) {
+            constexpr static const auto& secondary(const C<T>& arg) {
                 return static_cast<const T&(*)(const C<T>&)>(getX<T>)(arg);
             }
     };
 
+template <Axis FIRST, class Function, template <class> class C, class T>
+    void forEach(Function fun, const C<T>& obj) {
+        fun(get<FIRST>::primary(obj));
+        fun(get<FIRST>::secondary(obj));
+    }
+
+template <Axis FIRST, class Function, template <class> class C, class T>
+    void forEach(Function fun, C<T>& obj) {
+        fun(get<FIRST>::primary(obj));
+        fun(get<FIRST>::secondary(obj));
+    }
+
+#define forEach(x) \
+    do {\
+        x<Axis::X>();\
+        x<Axis::Y>();\
+    } while(0)
+
+template <Axis AXIS>
+    struct create {};
+
+template <>
+    struct create<Axis::X> {
+        template<template <class> class C, class T>
+            constexpr static C<T> primary(T lhs, T rhs) {
+                return C<T>{lhs, rhs};
+            }
+        template<template <class> class C, class T>
+            constexpr static C<T> secondary(T lhs, T rhs) {
+                return C<T>{rhs, lhs};
+            }
+    };
+
+template <>
+    struct create<Axis::Y> {
+        template<template <class> class C, class T>
+            constexpr static C<T> primary(T lhs, T rhs) {
+                return C<T>{rhs, lhs};
+            }
+        template<template <class> class C, class T>
+            constexpr static C<T> secondary(T lhs, T rhs) {
+                return C<T>{lhs, rhs};
+            }
+    };

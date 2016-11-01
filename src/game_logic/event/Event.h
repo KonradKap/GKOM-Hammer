@@ -30,6 +30,7 @@ template<class Receiver>
     class Event<Receiver, void> {
         public:
             typedef void (Receiver::*callback_function)(void);
+            typedef void (Receiver::*const_callback_function)(void) const;
 
             inline void connect(Receiver*, callback_function callback);
             inline void disconnect(Receiver*, callback_function callback);

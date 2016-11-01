@@ -10,7 +10,7 @@
 
 #include <SFML/System/Vector2.hpp>
 
-#include "../game_logic/Loopable.h"
+#include "game_logic/Loopable.h"
 
 class Model : public LoopableAdapter {
     public:

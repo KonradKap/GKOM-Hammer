@@ -13,10 +13,11 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "../game_logic/Loopable.h"
+#include "game_logic/Loopable.h"
 
 class WindowListener;
 class BasicEventArgs;
+class Line;
 
 class View : public LoopableAdapter {
     public:
@@ -30,8 +31,12 @@ class View : public LoopableAdapter {
         virtual ~View();
 
         void setWindowListener(std::unique_ptr<WindowListener> new_listener);
-    protected:
-        sf::RenderWindow window;
+
+        static const sf::RenderWindow& getWindow();
+    //protected:
+        static sf::RenderWindow window;
+
+        static void drawLine(const Line& l);
     private:
         virtual void onDraw(const BasicEventArgs& args) = 0;
         virtual void onUpdate(const BasicEventArgs& args);

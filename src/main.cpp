@@ -2,6 +2,9 @@
 #include <memory>
 
 #include <SFML/System/Sleep.hpp>
+#include <SFML/Graphics/Shape.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
 
 #include "game_logic/MainLoop.h"
 #include "game_logic/Loopable.h"
@@ -12,35 +15,63 @@
 #include "view/BattleView.h"
 
 #include "model/BattleModel.h"
+#include "model/unit/Unit.h"
 
 #include "commons/Getter.h"
+#include "commons/Vector.h"
+#include "commons/Utility.h"
+#include "commons/ShapeUtils.h"
 
-class KappaView : public View {
-    void onDraw(const BasicEventArgs&) {}
-};
-
-class KappaLoopable : public LoopableAdapter {
-    void onUpdate(const BasicEventArgs& args) {std::cout << "LUL: " << args.frame_time << std::endl; sf::sleep(sf::milliseconds(3));} 
-};
+#include "collisions/SAT.h"
 
 class KappaListener : public WindowListenerAdapter {
     void onClosed() const {MainLoop::getInstance().stop();};
-    void onKeyPressed(const sf::Event::KeyEvent& event) const { if (event.code == sf::Keyboard::Key::Escape or event.code == sf::Keyboard::Key::Return) onClosed();}
+    void onKeyPressed(const sf::Event::KeyEvent& event) const {
+        switch(event.code) {
+            case sf::Keyboard::Key::Escape:
+            case sf::Keyboard::Key::Return:
+                onClosed();
+            default:
+                return;
+        }
+    }
 };
 
-int main() {
-    sf::Vector2i keepo(3, 4);
+class KappaUnit : public Unit {
+    public:
+        KappaUnit(const sf::ConvexShape& s) : Unit(s) {}
+    private:
+        virtual void onUpdate(const BasicEventArgs& args) {
+        }
+};
 
-    std::cout << "X: " << get<Axis::X>::primary(keepo) << std::endl;
+namespace sf {
+    typedef Vector2<double> Vector2d;
+}
+
+int main() {
+    sf::ConvexShape polygon = create_shape(4, 50);
+    polygon.setOutlineColor(sf::Color::Red);
+    polygon.setFillColor(sf::Color::Transparent);
+    polygon.setOutlineThickness(5);
+    polygon.setPosition(10, 20);
+
+    sf::ConvexShape kappaShape = create_shape(6, 40);
+    kappaShape.setOutlineColor(sf::Color::Red);
+    kappaShape.setFillColor(sf::Color::Transparent);
+    kappaShape.setOutlineThickness(5);
+    kappaShape.setPosition(200, 200);
 
     BattleModel model;
-    BattleView view(model, std::make_unique<KappaListener>());
+    model.addUnit(std::unique_ptr<Unit>{new Unit(polygon)});
+    model.addUnit(std::unique_ptr<Unit>{new KappaUnit(kappaShape)});
+
+    kappaShape.setPosition(400,400);
+    model.addUnit(std::unique_ptr<Unit>{new KappaUnit(kappaShape)});
+
+    model.connect();
+    BattleView view(model);
+    view.setWindowListener(std::make_unique<KappaListener>());
     view.connect();
-
-    std::cout << "FPS:" << MainLoop::TARGET_FPS << std::endl;
-    std::cout << "FPMS:" << MainLoop::TARGET_FPMS << std::endl;
-    std::cout << "SPF:" << MainLoop::FRAME_TIME_SEC << std::endl;
-    std::cout << "MSPF:" << MainLoop::FRAME_TIME_MSEC << std::endl;
-
     MainLoop::getInstance().start();
 }

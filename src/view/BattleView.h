@@ -10,7 +10,7 @@
 #pragma once
 
 #include "View.h"
-#include "../commons/Axis.h"
+#include "commons/Axis.h"
 
 class BattleModel;
 
@@ -25,6 +25,8 @@ class BattleView : public View {
         void drawGrid();
         template <Axis AXIS>
             void drawGridIn();
+
+        void drawUnits();
 
         const BattleModel& source;
 };

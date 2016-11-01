@@ -1,5 +1,5 @@
 #Compiler and Linker
-CC          := c++
+CC          := clang
 
 #The Target Binary Program
 TARGET      := game
@@ -15,8 +15,8 @@ DEPEXT      := d
 OBJEXT      := o
 
 #Flags, Libraries and Includes
-CFLAGS      := -std=c++1y -Wall -O0 -g
-LIB         := -lstdc++ -lm -lboost_system -lsfml-graphics -lsfml-window -lsfml-system
+CFLAGS      := -std=c++1y -Wall -O0 -g -I$(shell pwd)/$(SRCDIR)
+LIB         := -lstdc++ -lm -lboost_system -lsfml-graphics -lsfml-window -lsfml-system -g
 INC         := -I$(INCDIR) -I/usr/local/include
 INCDEP      := -I$(INCDIR)
 

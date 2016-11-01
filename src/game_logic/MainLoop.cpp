@@ -57,6 +57,7 @@ void MainLoop::loopOnce(const sf::Clock& frame_timer, const sf::Clock& game_time
     events[size_t(BasicEventType::DRAW)].signal({GAME_TIME});
 
     const int FRAME_TIME = frame_timer.getElapsedTime().asMilliseconds();
+//    std::cout << FRAME_TIME_MSEC - FRAME_TIME << std::endl;
     sf::sleep(sf::milliseconds(FRAME_TIME_MSEC - FRAME_TIME));
 }
 
