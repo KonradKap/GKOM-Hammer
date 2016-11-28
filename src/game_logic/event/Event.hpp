@@ -27,8 +27,7 @@ template<class Receiver, class... Args>
 
 template<class Receiver, class... Args>
     void Event<Receiver, Args...>::signal(Args... args) {
-        auto copy = callbacks;
-        for (auto pair : copy) {
+        for (auto pair : callbacks) {
             auto callback = std::bind(pair.first, pair.second, args...);
             callback(args...);
         }
@@ -59,8 +58,7 @@ template<class Receiver>
 
 template<class Receiver>
     void Event<Receiver, void>::signal() {
-        auto copy = callbacks;
-        for (auto pair : copy){
+        for (auto pair : callbacks){
             auto callback = std::bind(pair.first, pair.second);
             callback();
         }

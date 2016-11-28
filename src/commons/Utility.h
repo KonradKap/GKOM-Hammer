@@ -11,12 +11,6 @@
 
 #include <utility>
 
-template <class T>
-    double overlap(T a_begin, T a_end, T b_begin, T b_end);
-
-template <class T>
-    double overlap(std::pair<T, T> a, std::pair<T, T> b);
-
 template<class Container>
     Container operator+(Container lhs, const Container& rhs);
 

@@ -1,31 +1,35 @@
- /*
-  * Model.h
-  *
-  * 4.09.2016 r.
-  *
-  * Memotosh
-  */
-
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
+#include <vector>
 
 #include "game_logic/Loopable.h"
+#include "model/Shape.h"
+#include "game_logic/shaders/Shader.h"
 
 class Model : public LoopableAdapter {
     public:
-        constexpr static const int BOARD_X = 800;
-        constexpr static const int BOARD_Y = 640;
-        static const sf::Vector2i BOARD;
-
-        constexpr static const int CHUNK_SIZE = 80;
-
-        constexpr static const int CHUNK_X = BOARD_X / CHUNK_SIZE;
-        constexpr static const int CHUNK_Y = BOARD_Y / CHUNK_SIZE;
-        static const sf::Vector2i CHUNK;
+        Model(Shape&& shape, const Shader& shader);
         
-        static_assert(BOARD_X == CHUNK_SIZE*CHUNK_X, "Board size is not divisible by chunk size");
-        static_assert(BOARD_Y == CHUNK_SIZE*CHUNK_Y, "Board size is not divisible by chunk size");
+        Shape& getShape();
+        const Shape& getShape() const;
+    
+        void onStart(const BasicEventArgs& arg);
+        void draw() const;
+    private:
+        void do_mapping();
 
-        virtual ~Model() {}
+        Shape shape;
+        const Shader& shader;
+        struct {
+            GLuint MVP_location;
+            GLuint V_location;
+            GLuint M_location;
+
+            GLuint colour_location;
+            GLuint light_position;
+
+            GLuint light_intensity;
+            glm::vec3 colour;
+            glm::mat4 model = glm::mat4(1.f);
+        } mapping;
 };

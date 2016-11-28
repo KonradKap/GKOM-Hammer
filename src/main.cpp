@@ -1,77 +1,57 @@
-#include <iostream>
-#include <memory>
-
-#include <SFML/System/Sleep.hpp>
-#include <SFML/Graphics/Shape.hpp>
-#include <SFML/Graphics/ConvexShape.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
+#include <GL/glew.h>
+#include <GL/gl.h>
 
 #include "game_logic/MainLoop.h"
-#include "game_logic/Loopable.h"
-#include "game_logic/event/Event.h"
+#include "game_logic/exceptions/OpenGlException.h"
 
 #include "view/WindowListener.h"
 #include "view/View.h"
-#include "view/BattleView.h"
+#include "view/Camera.h"
 
-#include "model/BattleModel.h"
-#include "model/unit/Unit.h"
-
-#include "commons/Getter.h"
-#include "commons/Vector.h"
+#include "commons/Vector2.h"
 #include "commons/Utility.h"
-#include "commons/ShapeUtils.h"
+#include "commons/ScopeBind.h"
 
-#include "collisions/SAT.h"
+#include "model/Model.h"
+#include "model/BasicShapes.h"
 
-class KappaListener : public WindowListenerAdapter {
-    void onClosed() const {MainLoop::getInstance().stop();};
-    void onKeyPressed(const sf::Event::KeyEvent& event) const {
-        switch(event.code) {
-            case sf::Keyboard::Key::Escape:
-            case sf::Keyboard::Key::Return:
-                onClosed();
-            default:
-                return;
-        }
-    }
-};
+#include "game_logic/shaders/Shader.h"
 
-class KappaUnit : public Unit {
+class KappaView : public View {
     public:
-        KappaUnit(const sf::ConvexShape& s) : Unit(s) {}
+        KappaView(Shape&& s, const Shader& sha) : View(), model(std::move(s), sha), camera(sha) {
+            model.connect();
+        }
     private:
-        virtual void onUpdate(const BasicEventArgs& args) {
+        Model model;
+        Camera camera;
+        void doDrawing() {
+            camera.move({0.0f, 0.01f, -0.01f});
+            camera.begin();
+            model.draw();
         }
 };
 
-namespace sf {
-    typedef Vector2<double> Vector2d;
+void kappa_mouse_b(GLFWwindow *, int, int, int) {
+}
+
+void kappa_cursor_p(GLFWwindow *, double, double) {
+}
+
+void kappa_cursor_e(GLFWwindow *, int) {
+}
+
+void kappa_key_fun(GLFWwindow *, int key, int, int s, int) {
+    if(key == GLFW_KEY_ESCAPE and s == GLFW_PRESS) 
+        MainLoop::getInstance().stop();
 }
 
 int main() {
-    sf::ConvexShape polygon = create_shape(4, 50);
-    polygon.setOutlineColor(sf::Color::Red);
-    polygon.setFillColor(sf::Color::Transparent);
-    polygon.setOutlineThickness(5);
-    polygon.setPosition(10, 20);
-
-    sf::ConvexShape kappaShape = create_shape(6, 40);
-    kappaShape.setOutlineColor(sf::Color::Red);
-    kappaShape.setFillColor(sf::Color::Transparent);
-    kappaShape.setOutlineThickness(5);
-    kappaShape.setPosition(200, 200);
-
-    BattleModel model;
-    model.addUnit(std::unique_ptr<Unit>{new Unit(polygon)});
-    model.addUnit(std::unique_ptr<Unit>{new KappaUnit(kappaShape)});
-
-    kappaShape.setPosition(400,400);
-    model.addUnit(std::unique_ptr<Unit>{new KappaUnit(kappaShape)});
-
-    model.connect();
-    BattleView view(model);
-    view.setWindowListener(std::make_unique<KappaListener>());
+    MainLoop::getInstance();
+    Shader shader("shader.vert", "shader.frag");
+    
+    KappaView view(Shape(table_vertices, table_indices, GL_STATIC_DRAW), shader);
+    view.setWindowListener({&kappa_key_fun, &kappa_mouse_b, &kappa_cursor_p, &kappa_cursor_e});
     view.connect();
     MainLoop::getInstance().start();
 }

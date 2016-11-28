@@ -15,8 +15,8 @@ DEPEXT      := d
 OBJEXT      := o
 
 #Flags, Libraries and Includes
-CFLAGS      := -std=c++1y -Wall -O0 -g -I$(shell pwd)/$(SRCDIR)
-LIB         := -lstdc++ -lm -lboost_system -lsfml-graphics -lsfml-window -lsfml-system -g
+CFLAGS      := -std=c++1y -Wall -O0 -g -I$(shell pwd)/$(SRCDIR) $(shell pkg-config --cflags glfw3) $(shell pkg-config --cflags glew) -DGLEW_STATIC=
+LIB         := -lstdc++ -lm -lboost_system $(shell pkg-config --libs glfw3) $(shell pkg-config --libs glew) -lglut
 INC         := -I$(INCDIR) -I/usr/local/include
 INCDEP      := -I$(INCDIR)
 
@@ -40,6 +40,10 @@ resources: directories
 directories:
 	    @mkdir -p $(TARGETDIR)
 		@mkdir -p $(BUILDDIR)
+
+#Run
+run: all
+	@sh -c 'cd $(TARGETDIR); ./$(TARGET)'
 
 #Clean only Objects
 clean:
@@ -67,4 +71,4 @@ $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@rm -f $(BUILDDIR)/$*.$(DEPEXT).tmp
 
 #Non-File Targets
-.PHONY: all remake clean cleaner resources
+.PHONY: all remake clean cleaner resources run

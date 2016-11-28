@@ -5,87 +5,75 @@
 #include <stdexcept>
 
 template<class T>
-    Vector<T>::Vector(T x, T y) : 
+    Vector2<T>::Vector2(T x, T y) : 
         x(x), y(y) {
     }
 
 template<class T>
-    Vector<T>::Vector(const Vector& w) : 
-        Vector(w.x, w.y) {
+    Vector2<T>::Vector2(const Vector2& w) : 
+        Vector2(w.x, w.y) {
     }
 
 template<class T>
     template<class W>
-        Vector<T>::Vector(const sf::Vector2<W>& arg) : 
-            Vector(arg.x, arg.y) {
+        Vector2<T>::Vector2(const Vector2<W>& arg) : 
+            Vector2(arg.x, arg.y) {
         }
 
 template<class T>
-    template<class W>
-        Vector<T>::Vector(const Vector<W>& arg) : 
-            Vector(arg.x, arg.y) {
-        }
-
-template<class T>
-    template<class W>
-        Vector<T>::operator sf::Vector2<W>() const {
-            return sf::Vector2<W>(x, y);
-        }
-
-template<class T>
-    void swap(Vector<T>& lhs, Vector<T>& rhs) {
+    void swap(Vector2<T>& lhs, Vector2<T>& rhs) {
         std::swap(lhs.x, rhs.x);
         std::swap(lhs.y, rhs.y);
     }
 
 template<class T>
-    T Vector<T>::length() const {
+    T Vector2<T>::length() const {
         return std::sqrt(length_sqr());
     }
 
 template<class T>
-    T Vector<T>::length_sqr() const {
+    T Vector2<T>::length_sqr() const {
         return this->x*this->x + this->y*this->y;
     }
 
 template<class T>
-    Vector<T>& Vector<T>::normalize() {
+    Vector2<T>& Vector2<T>::normalize() {
         *this /= this->length();
         return *this;
     }
 
 template<class T>
-    Vector<T> Vector<T>::normalize() const {
-        Vector<T> temp = *this;
+    Vector2<T> Vector2<T>::normalize() const {
+        Vector2<T> temp = *this;
         return temp.normalize();
     }
 
 template<class T>
-    T Vector<T>::projection_length(const Vector<T>& target) const {
+    T Vector2<T>::projection_length(const Vector2<T>& target) const {
         return dot_product(normalize(target));
     }
 
 template<class T>
-    Vector<T>& Vector<T>::project(const Vector<T>& target) {
+    Vector2<T>& Vector2<T>::project(const Vector2<T>& target) {
         return *this *= this->projection_length(target)/target.length();
     }
 
 template<class T>
-    Vector<T> Vector<T>::project(Vector<T> target) const {
+    Vector2<T> Vector2<T>::project(Vector2<T> target) const {
         return target *= this->projection_length(target)/target.length();
     }
 
 template<class T>
-    Vector<T> Vector<T>::perpendicular() const {
+    Vector2<T> Vector2<T>::perpendicular() const {
         return {this->y, -this->x};
     }
 
 template<class T>
-    T Vector<T>::dot_product(const Vector<T>& arg) const {
+    T Vector2<T>::dot_product(const Vector2<T>& arg) const {
         return arg.x*this->x + arg.y*this->y;
     }
 
-VectorI make_unit_vector(Direction dir) {
+Vector2I make_unit_vector(Direction dir) {
     switch(dir) {
         case Direction::UP:
             return {0, -1};
@@ -101,20 +89,20 @@ VectorI make_unit_vector(Direction dir) {
 }
 
 template<class T>
-    Vector<T>& Vector<T>::operator=(Vector<T> arg) {
+    Vector2<T>& Vector2<T>::operator=(Vector2<T> arg) {
         swap(*this, arg);
         return *this;
     }
 
 template<class T>
-    Vector<T>& Vector<T>::operator+=(const Vector<T>& arg) {
+    Vector2<T>& Vector2<T>::operator+=(const Vector2<T>& arg) {
         x += arg.x;
         y += arg.y;
         return *this;
     }
 
 template<class T>
-    Vector<T>& Vector<T>::operator-=(const Vector<T>& arg) {
+    Vector2<T>& Vector2<T>::operator-=(const Vector2<T>& arg) {
         x -= arg.x;
         y -= arg.y;
         return *this;
@@ -122,7 +110,7 @@ template<class T>
 
 template <class T>
     template <class W>
-        Vector<T>& Vector<T>::operator*=(const W scalar) {
+        Vector2<T>& Vector2<T>::operator*=(const W scalar) {
             x *= scalar;
             y *= scalar;
             return *this;
@@ -130,38 +118,38 @@ template <class T>
 
 template<class T>
     template <class W>
-        Vector<T>& Vector<T>::operator/=(const W scalar) {
+        Vector2<T>& Vector2<T>::operator/=(const W scalar) {
             x /= scalar;
             y /= scalar;
             return *this;
         }
 
 template<class T>
-    bool operator==(const Vector<T>& lhs, const Vector<T>& rhs) {
+    bool operator==(const Vector2<T>& lhs, const Vector2<T>& rhs) {
         return lhs.x == rhs.x and lhs.y == rhs.y;
     }
 
 template<class T>
-    bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs) {
+    bool operator!=(const Vector2<T>& lhs, const Vector2<T>& rhs) {
         return !(lhs == rhs);
     }
 
 template<class T>
-    Vector<T> operator+(Vector<T> lhs, const Vector<T>& rhs) {
+    Vector2<T> operator+(Vector2<T> lhs, const Vector2<T>& rhs) {
         return lhs += rhs;
     }
 
 template<class T>
-     Vector<T> operator-(Vector<T> lhs, const Vector<T>& rhs) {
+     Vector2<T> operator-(Vector2<T> lhs, const Vector2<T>& rhs) {
          return lhs -= rhs;
      }
 
 template<class T, class W>
-     Vector<T> operator*(Vector<T> lhs, const W rhs) {
+     Vector2<T> operator*(Vector2<T> lhs, const W rhs) {
          return lhs *= rhs;
      }
 
 template<class T, class W>
-     Vector<T> operator/(Vector<T> lhs, const W rhs) {
+     Vector2<T> operator/(Vector2<T> lhs, const W rhs) {
          return lhs /= rhs;
      }

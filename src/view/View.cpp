@@ -1,48 +1,42 @@
 #include "View.h"
 
-#include <SFML/Graphics/Vertex.hpp>
-
 #include "game_logic/MainLoop.h"
-#include "GameConstants.h"
 #include "WindowListener.h"
-#include "commons/Line.h"
-#include "commons/Utility.h"
-
-const sf::Vector2i View::WINDOW{WINDOW_X, WINDOW_Y};
-sf::RenderWindow View::window(sf::VideoMode(WINDOW_X, WINDOW_Y), GAME_TITLE);
 
 View::View() : 
-        window_listener(nullptr) {
+        window_listener() {
 }
 
-View::View(std::unique_ptr<WindowListener> listener) :
-        window_listener(std::move(listener)) {
+View::View(WindowListener listener) :
+        window_listener(listener) {
 }
 
 View::~View() {
 }
 
-void View::setWindowListener(std::unique_ptr<WindowListener> new_listener) {
+void View::onStart(const BasicEventArgs&) {
+    setWindowCallbacks(MainLoop::getInstance().getWindow().get());
+}
+
+void View::onDraw(const BasicEventArgs&) {
+    glClearColor(0.0, 0.8, 0.3, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    doDrawing();
+
+    glfwSwapBuffers(MainLoop::getInstance().getWindow().get());
+}
+
+void View::setWindowListener(WindowListener new_listener) {
     std::swap(window_listener, new_listener);
+    auto window = MainLoop::getInstance().getWindow().get();
+    if(window)
+        setWindowCallbacks(window);
 }
 
-const sf::RenderWindow& View::getWindow() {
-    return window;
+void View::setWindowCallbacks(GLFWwindow* window) {
+    glfwSetKeyCallback(window, window_listener.key_callback);
+    glfwSetMouseButtonCallback(window, window_listener.mouse_button_callback);
+    glfwSetCursorPosCallback(window, window_listener.cursor_pos_callback);
+    glfwSetCursorEnterCallback(window, window_listener.cursor_enter_callback);
 }
-
-void View::drawLine(const Line& l) {
-    print(l.begin());
-    print(l.end());
-    sf::Vertex points[] = {
-        sf::Vertex(sf::Vector2f(l.begin()), sf::Color::Blue),
-        sf::Vertex(sf::Vector2f(l.end()), sf::Color::Blue)
-    };
-    window.draw(points, 2, sf::Lines);
-}
-
-void View::onUpdate(const BasicEventArgs&) {
-    sf::Event event;
-    while(window.pollEvent(event) == true) 
-        window_listener->readSingleEvent(event);
-}
-

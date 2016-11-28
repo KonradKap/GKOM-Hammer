@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <chrono>
+
 enum class BasicEventType {
     START = 0,
     UPDATE,
@@ -21,5 +23,5 @@ enum class BasicEventType {
 
 class BasicEventArgs {
     public:
-        int frame_time;
+        std::chrono::milliseconds frame_time;
 };

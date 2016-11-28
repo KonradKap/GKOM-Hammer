@@ -13,5 +13,7 @@ enum class Direction {
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
+    FRONT,
+    BACK
 };
