@@ -18,8 +18,12 @@ class Camera {
         void setDirection(const glm::vec3& direction);
         glm::vec3 getDirection() const;
 
+        void lean(float degrees);
         void tilt(float degrees);
-        float getTilt() const;
+        void rotate(float degrees);
+
+        glm::vec3 left() const;
+        glm::vec3 right() const;
 
         void begin() const;
     private:

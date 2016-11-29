@@ -10,16 +10,10 @@ class BasicEventArgs;
 class View : public LoopableAdapter {
     public:
         View();
-        View(const View& view) = delete;
-        View(WindowListener listener);
+        View(const View& view) = default;
         virtual ~View();
-
-        void setWindowListener(WindowListener new_listener);
     private:
         void onDraw(const BasicEventArgs& args);
         virtual void doDrawing() = 0;
         void onStart(const BasicEventArgs&);
-        void setWindowCallbacks(GLFWwindow* window);
-
-        WindowListener window_listener;
 };

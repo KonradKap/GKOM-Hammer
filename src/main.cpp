@@ -17,41 +17,81 @@
 
 #include "game_logic/shaders/Shader.h"
 
+#include "controller/Controller.h"
+#include "controller/Keyboard.h"
+
+#include <iostream>
+#include <cassert>
+
 class KappaView : public View {
     public:
         KappaView(Shape&& s, const Shader& sha) : View(), model(std::move(s), sha), camera(sha) {
             model.connect();
+            camera.lean(40);
+            camera.setPosition({0, 0, -4});
+            
         }
-    private:
         Model model;
         Camera camera;
+        void onUpdate(const BasicEventArgs& args) {
+            if(Keyboard::getInstance().isPressed(GLFW_KEY_W))
+                camera.move(camera.getDirection()/2.0f);
+            if(Keyboard::getInstance().isPressed(GLFW_KEY_S))
+                camera.move(camera.getDirection()/-2.0f);
+            if(Keyboard::getInstance().isPressed(GLFW_KEY_A))
+                camera.move(camera.left()/2.0f);
+            if(Keyboard::getInstance().isPressed(GLFW_KEY_D))
+                camera.move(camera.right()/2.0f);
+
+            assert(glm::length(camera.right()) -1 <= 0.001f);
+        }
         void doDrawing() {
-            camera.move({0.0f, 0.01f, -0.01f});
+            assert(glm::length(camera.getDirection()) - 1 <= 0.001f);
             camera.begin();
             model.draw();
         }
 };
 
-void kappa_mouse_b(GLFWwindow *, int, int, int) {
-}
+class KappaController : public Controller<KappaView> {
+    public:
+    KappaController(KappaView& view) : Controller(view) {
 
-void kappa_cursor_p(GLFWwindow *, double, double) {
-}
+    }
+    private:
+    void onMouseMove(KappaView& context, double x_pos, double y_pos) {
+        const auto middle_screen = MainLoop::WINDOW/2;
+        glfwSetCursorPos(MainLoop::getInstance().getWindow().get(), middle_screen.x, middle_screen.y);
+        const auto diff = Vector2D{x_pos, y_pos} - Vector2D(middle_screen);
+        const float sensitivity = 0.1f;
+        context.camera.lean(diff.y * sensitivity);
+        context.camera.rotate(diff.x * sensitivity);
+    }
 
-void kappa_cursor_e(GLFWwindow *, int) {
-}
+    void onMouseButtonEvent(KappaView& context, int button, int action, int mods) {
+    }
 
-void kappa_key_fun(GLFWwindow *, int key, int, int s, int) {
-    if(key == GLFW_KEY_ESCAPE and s == GLFW_PRESS) 
-        MainLoop::getInstance().stop();
-}
+    void onMouseLeave(KappaView& context, int entered) {
+    }
+
+    void onKeyEvent(KappaView& context, int key, int scancode, int action, int mods) {
+        if(action == GLFW_PRESS) {
+            if(key == GLFW_KEY_ENTER or key == GLFW_KEY_ESCAPE)
+                MainLoop::getInstance().stop();
+            else
+                Keyboard::getInstance().press(key);
+        } else if(action == GLFW_RELEASE) {
+            Keyboard::getInstance().release(key);
+        }
+    }
+};
 
 int main() {
     MainLoop::getInstance();
     Shader shader("shader.vert", "shader.frag");
     
     KappaView view(Shape(table_vertices, table_indices, GL_STATIC_DRAW), shader);
-    view.setWindowListener({&kappa_key_fun, &kappa_mouse_b, &kappa_cursor_p, &kappa_cursor_e});
+    KappaController controller(view);
+    controller.connect();
     view.connect();
     MainLoop::getInstance().start();
 }

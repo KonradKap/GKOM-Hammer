@@ -66,6 +66,16 @@ void MainLoop::start() {
             time_point_cast<milliseconds>(system_clock::now()) - start});
 }
 
+void MainLoop::loopOnce(const std::chrono::duration<long, std::milli>& frame, 
+        const std::chrono::duration<long, std::milli>& game) {
+
+    glfwPollEvents();
+    events[size_t(BasicEventType::UPDATE)].signal({frame});
+    events[size_t(BasicEventType::DRAW)].signal({game});
+
+    std::this_thread::sleep_for(FRAME_TIME_MSEC - frame);
+}
+
 void MainLoop::initialize() {
     if (glfwInit() != GL_TRUE) 
         throw OpenGlException("glfwInit failed");
@@ -92,16 +102,6 @@ void MainLoop::initialize() {
 
 void MainLoop::stop() {
     running = false;
-}
-
-void MainLoop::loopOnce(const std::chrono::duration<long, std::milli>& frame, 
-        const std::chrono::duration<long, std::milli>& game) {
-
-    glfwPollEvents();
-    events[size_t(BasicEventType::UPDATE)].signal({frame});
-    events[size_t(BasicEventType::DRAW)].signal({game});
-
-    std::this_thread::sleep_for(FRAME_TIME_MSEC - frame);
 }
 
 const Window& MainLoop::getWindow() const {
