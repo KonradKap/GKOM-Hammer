@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "game_logic/exceptions/ShaderException.h"
 
 Shader::Shader() :
@@ -89,4 +91,14 @@ void Shader::use() const {
 
 GLuint Shader::get_id() const {
     return id;
+}
+
+void Shader::setUniform(const char* name, const glm::vec3& value) const {
+    const auto loc = glGetUniformLocation(id, name);
+    glUniform3fv(loc, 1, glm::value_ptr(value));
+}
+        
+void Shader::setUniform(const char* name, const glm::mat4& value) const {
+    const auto loc = glGetUniformLocation(id, name);
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
 }

@@ -98,6 +98,8 @@ void MainLoop::initialize() {
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+    glfwSetInputMode(window.get(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
 void MainLoop::stop() {

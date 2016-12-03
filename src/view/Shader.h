@@ -4,6 +4,7 @@
 #include <functional>
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 class Shader {
     public:
@@ -18,10 +19,17 @@ class Shader {
 
         void use() const;
         GLuint get_id() const;
+
+        void setUniform(const char* name, const glm::vec3& value) const;
+        void setUniform(const char* name, const glm::mat4& value) const;
     private:
         class id_guard;
         std::string read_code(const GLchar* path) const;
-        id_guard compile_shader(const std::string& code, GLenum shader_type, const GLchar* path) const;
+        id_guard compile_shader(
+            const std::string& code, 
+            GLenum shader_type, 
+            const GLchar* path) const;
+
         GLuint link_program(GLuint vertex_id, GLuint fragment_id) const;
         void print_errors(GLuint id, GLenum pname, 
                 std::function<void (GLuint, GLenum, GLint*)> get_iv, 

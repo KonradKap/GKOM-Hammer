@@ -2,7 +2,10 @@
 
 #include <utility>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "commons/ScopeBind.h"
+#include "view/Shader.h"
 
 Shape::Shape() : 
         VAO(0),
@@ -24,11 +27,11 @@ Shape::Shape(const std::vector<GLfloat> vertices,
 
         glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(GLfloat), vertices.data(), usage);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
 
-        //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-        //glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
     }
     
     glGenBuffers(1, &EBO);
@@ -36,6 +39,7 @@ Shape::Shape(const std::vector<GLfloat> vertices,
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), usage);
 }
 
+//TODO: Copied elements cause segfault when drawn.
 //Shape::Shape(const Shape& s) {
 //    glGenVertexArrays(1, &VAO);
 //    glGenBuffers(1, &VBO);
@@ -97,5 +101,14 @@ int Shape::indexCount() const {
     return ( nBufferSize / sizeof(GLuint) );
 }
 
-void Shape::apply(const glm::mat4& matrix) {
+void Shape::draw(const glm::vec3& position, const Shader& shader) const {
+    draw(glm::translate(glm::mat4(1.f), position), shader);
+}
+
+void Shape::draw(const glm::mat4& transform, const Shader& shader) const {
+    const auto guard = ScopeBind::guard(*this);
+
+    shader.setUniform("model", transform);
+
+    glDrawElements(GL_TRIANGLES, indexCount(), GL_UNSIGNED_INT, 0);
 }

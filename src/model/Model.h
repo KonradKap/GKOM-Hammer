@@ -1,35 +1,47 @@
 #pragma once
 
-#include <vector>
+#include <array>
+
+#include <glm/glm.hpp>
 
 #include "game_logic/Loopable.h"
 #include "model/Shape.h"
-#include "game_logic/shaders/Shader.h"
+
+class Shader;
+class BasicEventArgs;
 
 class Model : public LoopableAdapter {
     public:
-        Model(Shape&& shape, const Shader& shader);
+        enum class HammerShapes {
+            BASE,
+            HOLDER,
+            HANDLE,
+            HEAD,
+            TARGET,
+            TARGET_BASE,
+            COUNT
+        };
+        typedef std::array<Shape, static_cast<size_t>(HammerShapes::COUNT)> ShapeArray;
+
+        Model(const Shader& shader);
         
-        Shape& getShape();
-        const Shape& getShape() const;
+        ShapeArray& getShapes();
+        const ShapeArray& getShapes() const;
     
-        void onStart(const BasicEventArgs& arg);
         void draw() const;
     private:
-        void do_mapping();
+        void onUpdate(const BasicEventArgs& args);
 
-        Shape shape;
+        void draw_stable_shapes() const;
+        void draw_original_and_copy(const glm::vec3& offset) const;
+        void draw_animated(const glm::vec3& offset) const;
+
+        ShapeArray shapes;
         const Shader& shader;
-        struct {
-            GLuint MVP_location;
-            GLuint V_location;
-            GLuint M_location;
 
-            GLuint colour_location;
-            GLuint light_position;
+        float angle;
+        static constexpr const float ROTATION_SPEED = 4.0f;
 
-            GLuint light_intensity;
-            glm::vec3 colour;
-            glm::mat4 model = glm::mat4(1.f);
-        } mapping;
+        float push;
+        static constexpr const float PUSH_SPEED = 0.2f;
 };

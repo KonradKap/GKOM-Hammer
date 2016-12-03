@@ -7,6 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+class Shader;
+
 class Shape {
     friend class ScopeBindShape;
     public:
@@ -15,6 +17,7 @@ class Shape {
               const std::vector<GLuint> indices,
               GLenum usage);
 
+        //TODO:
         Shape(const Shape& s) = delete;
         Shape(Shape&& s);
         Shape& operator=(Shape s);
@@ -25,7 +28,9 @@ class Shape {
 
         int vertexCount() const;
         int indexCount() const;
-        void apply(const glm::mat4& matrix);
+
+        void draw(const glm::vec3& position, const Shader& shader) const;
+        void draw(const glm::mat4& transform, const Shader& shader) const;
     private:
         static void copy_buffer(GLuint source, GLuint destination, GLenum usage);
 

@@ -15,7 +15,8 @@
 #include "model/Model.h"
 #include "model/BasicShapes.h"
 
-#include "game_logic/shaders/Shader.h"
+#include "view/Shader.h"
+#include "view/Light.h"
 
 #include "controller/Controller.h"
 #include "controller/Keyboard.h"
@@ -25,14 +26,16 @@
 
 class KappaView : public View {
     public:
-        KappaView(Shape&& s, const Shader& sha) : View(), model(std::move(s), sha), camera(sha) {
+        KappaView(const Shader& sha) : View(), sha(sha), model(sha), camera(sha) {
             model.connect();
             camera.lean(40);
             camera.setPosition({0, 0, -4});
-            
         }
+        
+        const Shader& sha;
         Model model;
         Camera camera;
+
         void onUpdate(const BasicEventArgs& args) {
             if(Keyboard::getInstance().isPressed(GLFW_KEY_W))
                 camera.move(camera.getDirection()/2.0f);
@@ -42,12 +45,12 @@ class KappaView : public View {
                 camera.move(camera.left()/2.0f);
             if(Keyboard::getInstance().isPressed(GLFW_KEY_D))
                 camera.move(camera.right()/2.0f);
-
-            assert(glm::length(camera.right()) -1 <= 0.001f);
         }
+
         void doDrawing() {
-            assert(glm::length(camera.getDirection()) - 1 <= 0.001f);
+            setLight({-4.5, 8, 0.5}, {1, 1, 1}, sha);
             camera.begin();
+
             model.draw();
         }
 };
@@ -89,7 +92,7 @@ int main() {
     MainLoop::getInstance();
     Shader shader("shader.vert", "shader.frag");
     
-    KappaView view(Shape(table_vertices, table_indices, GL_STATIC_DRAW), shader);
+    KappaView view(shader);
     KappaController controller(view);
     controller.connect();
     view.connect();

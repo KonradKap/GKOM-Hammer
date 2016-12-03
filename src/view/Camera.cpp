@@ -1,10 +1,9 @@
 #include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-#include "game_logic/shaders/Shader.h"
+#include "view/Shader.h"
 #include "game_logic/MainLoop.h"
 
 Camera::Camera(const Shader& shader) : 
@@ -93,11 +92,9 @@ glm::vec3 Camera::right() const {
 
 void Camera::begin() const {
     shader.use();
-    GLuint projLoc = glGetUniformLocation(shader.get_id(), "projection");
-    glm::mat4 projection = glm::perspective(45.0f, (GLfloat)MainLoop::WINDOW_X / (GLfloat)MainLoop::WINDOW_Y, 0.1f, 100.0f);
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    const glm::mat4 projection = glm::perspective(45.0f, (GLfloat)MainLoop::WINDOW_X / (GLfloat)MainLoop::WINDOW_Y, 0.1f, 100.0f);
+    shader.setUniform("projection", projection);
 
-    GLuint viewLoc = glGetUniformLocation(shader.get_id(), "view");
     const auto view = glm::lookAt(position, center, up);
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    shader.setUniform("view", view);
 }
