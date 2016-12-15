@@ -4,8 +4,6 @@
 #include <memory>
 #include <deque>
 
-#include <GL/glew.h>
-#include <GL/gl.h> 
 #include <GLFW/glfw3.h>
 
 #include "commons/Vector2.h"

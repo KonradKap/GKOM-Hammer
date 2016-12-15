@@ -1,10 +1,9 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <GL/gl.h> 
-#include <GLFW/glfw3.h>
 
 #include "model/Shape.h"
+#include "model/Texture.h"
 
 class ScopeBindVBO {
     public:
@@ -40,6 +39,18 @@ class ScopeBindShape {
         }
 };
 
+class ScopeBindTexture {
+    public:
+        ScopeBindTexture(const Texture& t) {
+            glActiveTexture(t.texture_id);
+            glBindTexture(GL_TEXTURE_2D, t.texture);
+        }
+        ~ScopeBindTexture() {
+            glActiveTexture(0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+};
+
 namespace ScopeBind {
     inline ScopeBindVBO guard(GLenum target, GLuint VBO) {
         return ScopeBindVBO(target, VBO);
@@ -51,5 +62,9 @@ namespace ScopeBind {
 
     inline ScopeBindShape guard(const Shape& s) {
         return ScopeBindShape(s);
+    }
+
+    inline ScopeBindTexture guard(const Texture& t) {
+        return ScopeBindTexture(t);
     }
 };

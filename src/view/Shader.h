@@ -22,6 +22,7 @@ class Shader {
 
         void setUniform(const char* name, const glm::vec3& value) const;
         void setUniform(const char* name, const glm::mat4& value) const;
+        void setUniform(const char* name, GLuint value) const;
     private:
         class id_guard;
         std::string read_code(const GLchar* path) const;

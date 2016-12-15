@@ -1,3 +1,5 @@
+#include <GL/glew.h>
+#include <GL/gl.h>
 #include "model/Shape.h"
 
 #include <utility>
@@ -14,8 +16,9 @@ Shape::Shape() :
 
 }
 
-Shape::Shape(const std::vector<GLfloat> vertices,
-             const std::vector<GLuint> indices,
+Shape::Shape(const std::vector<GLfloat>& vertices,
+             const std::vector<GLuint>& indices,
+             int data,
              GLenum usage) {
     
     glGenVertexArrays(1, &VAO);
@@ -27,11 +30,24 @@ Shape::Shape(const std::vector<GLfloat> vertices,
 
         glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(GLfloat), vertices.data(), usage);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-        glEnableVertexAttribArray(0);
+        const float size = ((data & VERTICES) == VERTICES) * 3 +
+            ((data & NORMALS) == NORMALS) * 3 +
+            ((data & TEXTURES) == TEXTURES) * 2;
 
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
+        if(size >= 3) {
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)0);
+            glEnableVertexAttribArray(0);
+        }
+
+        if(size >= 6) {
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+            glEnableVertexAttribArray(1);
+        }
+
+        if(size >= 8) {
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+            glEnableVertexAttribArray(2);
+        }
     }
     
     glGenBuffers(1, &EBO);
@@ -108,6 +124,7 @@ void Shape::draw(const glm::vec3& position, const Shader& shader) const {
 void Shape::draw(const glm::mat4& transform, const Shader& shader) const {
     const auto guard = ScopeBind::guard(*this);
 
+    shader.use();
     shader.setUniform("model", transform);
 
     glDrawElements(GL_TRIANGLES, indexCount(), GL_UNSIGNED_INT, 0);

@@ -17,82 +17,45 @@
 
 #include "view/Shader.h"
 #include "view/Light.h"
+#include "view/GameView.h"
 
 #include "controller/Controller.h"
 #include "controller/Keyboard.h"
 
-#include <iostream>
-#include <cassert>
-
-class KappaView : public View {
+class KappaController : public Controller {
     public:
-        KappaView(const Shader& sha) : View(), sha(sha), model(sha), camera(sha) {
-            model.connect();
-            camera.lean(40);
-            camera.setPosition({0, 0, -4});
-        }
-        
-        const Shader& sha;
-        Model model;
-        Camera camera;
-
-        void onUpdate(const BasicEventArgs& args) {
-            if(Keyboard::getInstance().isPressed(GLFW_KEY_W))
-                camera.move(camera.getDirection()/2.0f);
-            if(Keyboard::getInstance().isPressed(GLFW_KEY_S))
-                camera.move(camera.getDirection()/-2.0f);
-            if(Keyboard::getInstance().isPressed(GLFW_KEY_A))
-                camera.move(camera.left()/2.0f);
-            if(Keyboard::getInstance().isPressed(GLFW_KEY_D))
-                camera.move(camera.right()/2.0f);
-        }
-
-        void doDrawing() {
-            setLight({-4.5, 8, 0.5}, {1, 1, 1}, sha);
-            camera.begin();
-
-            model.draw();
-        }
-};
-
-class KappaController : public Controller<KappaView> {
-    public:
-    KappaController(KappaView& view) : Controller(view) {
-
+    KappaController(GameView& view) : Controller(), context(view) {
     }
     private:
-    void onMouseMove(KappaView& context, double x_pos, double y_pos) {
+    void onMouseMove(double x_pos, double y_pos) {
         const auto middle_screen = MainLoop::WINDOW/2;
         glfwSetCursorPos(MainLoop::getInstance().getWindow().get(), middle_screen.x, middle_screen.y);
         const auto diff = Vector2D{x_pos, y_pos} - Vector2D(middle_screen);
         const float sensitivity = 0.1f;
-        context.camera.lean(diff.y * sensitivity);
-        context.camera.rotate(diff.x * sensitivity);
+        context.getCamera().lean(diff.y * sensitivity);
+        context.getCamera().rotate(diff.x * sensitivity);
     }
 
-    void onMouseButtonEvent(KappaView& context, int button, int action, int mods) {
+    void onMouseButtonEvent(int button, int action, int mods) {
     }
 
-    void onMouseLeave(KappaView& context, int entered) {
+    void onMouseLeave(int entered) {
     }
 
-    void onKeyEvent(KappaView& context, int key, int scancode, int action, int mods) {
-        if(action == GLFW_PRESS) {
-            if(key == GLFW_KEY_ENTER or key == GLFW_KEY_ESCAPE)
-                MainLoop::getInstance().stop();
-            else
-                Keyboard::getInstance().press(key);
-        } else if(action == GLFW_RELEASE) {
-            Keyboard::getInstance().release(key);
-        }
+    void onKeyEvent(int key, int scancode, int action, int mods) {
+        if(action == GLFW_PRESS and (key == GLFW_KEY_ENTER or key == GLFW_KEY_ESCAPE))
+            MainLoop::getInstance().stop();
     }
+
+    GameView& context;
 };
 
 int main() {
     MainLoop::getInstance();
-    Shader shader("shader.vert", "shader.frag");
-    
-    KappaView view(shader);
+
+    Model m;
+    m.connect();
+    GameView view(m);
     KappaController controller(view);
     controller.connect();
     view.connect();

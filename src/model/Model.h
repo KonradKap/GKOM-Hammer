@@ -7,7 +7,6 @@
 #include "game_logic/Loopable.h"
 #include "model/Shape.h"
 
-class Shader;
 class BasicEventArgs;
 
 class Model : public LoopableAdapter {
@@ -23,21 +22,20 @@ class Model : public LoopableAdapter {
         };
         typedef std::array<Shape, static_cast<size_t>(HammerShapes::COUNT)> ShapeArray;
 
-        Model(const Shader& shader);
+        Model();
         
         ShapeArray& getShapes();
         const ShapeArray& getShapes() const;
+
+        Shape& operator[](HammerShapes id);
+        const Shape& operator[](HammerShapes id) const;
     
-        void draw() const;
+        float getPush() const;
+        float getAngle() const;
     private:
         void onUpdate(const BasicEventArgs& args);
 
-        void draw_stable_shapes() const;
-        void draw_original_and_copy(const glm::vec3& offset) const;
-        void draw_animated(const glm::vec3& offset) const;
-
         ShapeArray shapes;
-        const Shader& shader;
 
         float angle;
         static constexpr const float ROTATION_SPEED = 4.0f;

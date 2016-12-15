@@ -11,23 +11,24 @@
 
 #include <utility>
 
-#include <boost/spirit/include/support.hpp>
+#include "commons/IsContainer.h"
 
-template<class Container, typename std::enable_if<boost::spirit::traits::is_container<Container>::type>::type = 0>
+template<class Container, typename std::enable_if<is_container<Container>::value>::type* = nullptr >
     Container operator+(Container lhs, const Container& rhs);
 
-template<class Container, typename std::enable_if<boost::spirit::traits::is_container<Container>::type>::type = 0>
+template<class Container, typename std::enable_if<is_container<Container>::value>::type* = nullptr >
     Container operator+=(Container& lhs, const Container& rhs);
 
-template<class Container, typename std::enable_if<boost::spirit::traits::is_container<Container>::type>::type = 0>
+template<class Container, typename std::enable_if<is_container<Container>::value>::type* = nullptr >
     Container operator+(Container lhs, Container&& rhs);
 
-template<class Container, typename std::enable_if<boost::spirit::traits::is_container<Container>::type>::type = 0>
+template<class Container, typename std::enable_if<is_container<Container>::value>::type* = nullptr >
     Container operator+=(Container& lhs, Container&& rhs);
 
-template<class vector>
-void print(const vector& w) {
-    std::cout << w.x << ", " << w.y << ", " << w.z << std::endl;
-}
+template<class Container, typename std::enable_if<is_container<Container>::value>::type* = nullptr >
+    bool operator==(const Container& lhs, const Container& rhs);
+
+template<class Container, typename std::enable_if<is_container<Container>::value>::type* = nullptr >
+    bool operator!=(const Container& lhs, const Container& rhs);
 
 #include "Utility.hpp"

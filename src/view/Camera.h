@@ -1,13 +1,16 @@
 #pragma once
 
+#include <vector>
+#include <functional>
+
 #include <glm/glm.hpp>
 
 class Shader;
 
 class Camera {
     public:
-        Camera(const Shader& shader);
-        Camera(const Shader& shader, const glm::vec3& position, const glm::vec3& direction, const float tilt);
+        Camera();
+        Camera(const glm::vec3& position, const glm::vec3& direction, const float tilt);
         Camera(const Camera& c);
         ~Camera();
 
@@ -25,10 +28,9 @@ class Camera {
         glm::vec3 left() const;
         glm::vec3 right() const;
 
-        void begin() const;
+        void begin(const Shader& shader) const;
+        void begin(const std::vector<std::reference_wrapper<const Shader>>& shaders) const;
     private:
-        const Shader& shader;
-
         glm::vec3 position;
         glm::vec3 center;
         glm::vec3 up;

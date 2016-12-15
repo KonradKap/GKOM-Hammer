@@ -1,11 +1,10 @@
+#include <GL/glew.h>
 #include "MainLoop.h"
 
 #include <thread>
 #include <chrono>
 
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <GL/gl.h> 
 
 #include "model/Shape.h"
 #include "game_logic/exceptions/OpenGlException.h"

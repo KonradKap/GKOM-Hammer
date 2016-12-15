@@ -15,8 +15,8 @@ DEPEXT      := d
 OBJEXT      := o
 
 #Flags, Libraries and Includes
-CFLAGS      := -std=c++1y -Wall -Wno-missing-braces -O0 -g -I$(shell pwd)/$(SRCDIR) $(shell pkg-config --cflags glfw3) $(shell pkg-config --cflags glew) -DGLEW_STATIC= -DGLM_FORCE_RADIANS=
-LIB         := -lstdc++ -lm -lboost_system $(shell pkg-config --libs glfw3) $(shell pkg-config --libs glew) -lglut
+CFLAGS      := -std=c++11 -Wall -Wno-missing-braces -O0 -g -I$(shell pwd)/$(SRCDIR) $(shell pkg-config --cflags glfw3) $(shell pkg-config --cflags glew) -DGLEW_STATIC= -DGLM_FORCE_RADIANS=
+LIB         := -lstdc++ -lm -lboost_system $(shell pkg-config --libs glfw3) $(shell pkg-config --libs glew) -lglut -lSOIL
 INC         := -I$(INCDIR) -I/usr/local/include
 INCDEP      := -I$(INCDIR)
 
