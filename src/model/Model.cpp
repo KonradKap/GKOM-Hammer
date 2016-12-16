@@ -4,21 +4,21 @@
 
 #include "game_logic/MainLoop.h"
 #include "controller/Keyboard.h"
-#include "model/models/hammer_holder_1.h"
+#include "model/models/hammer_holder.h"
 #include "model/models/hammer_head.h"
 #include "model/models/hammer_handle.h"
 #include "model/models/target_base.h"
-#include "model/models/target_1.h"
+#include "model/models/target.h"
 #include "model/models/base.h"
 
 Model::Model() :
         shapes{
-            Shape{base_vertices, base_indices, Shape::VERTICES | Shape::NORMALS}, 
-            Shape{hammer_holder_1_vertices, hammer_holder_1_indices, Shape::VERTICES | Shape::NORMALS}, 
+            Shape{base_vertices, base_indices, Shape::VERTICES | Shape::NORMALS | Shape::TEXTURES}, 
+            Shape{hammer_holder_vertices, hammer_holder_indices, Shape::VERTICES | Shape::NORMALS | Shape::TEXTURES}, 
             Shape{hammer_handle_vertices, hammer_handle_indices, Shape::VERTICES | Shape::NORMALS}, 
             Shape{hammer_head_vertices, hammer_head_indices, Shape::VERTICES | Shape::NORMALS}, 
-            Shape{target_1_vertices, target_1_indices, Shape::VERTICES | Shape::NORMALS}, 
-            Shape{target_base_vertices, target_base_indices, Shape::VERTICES | Shape::NORMALS},
+            Shape{target_vertices, target_indices, Shape::VERTICES | Shape::NORMALS}, 
+            Shape{target_base_vertices, target_base_indices, Shape::VERTICES | Shape::NORMALS | Shape::TEXTURES},
         },
         angle(0.0f),
         push(0.0f) {
@@ -50,8 +50,6 @@ float Model::getAngle() const {
 }
 
 void Model::onUpdate(const BasicEventArgs& args) {
-    static bool target;
-    static bool hitting;
     if(hitting) {
         angle += ROTATION_SPEED;
         if(angle > 0.0f) {

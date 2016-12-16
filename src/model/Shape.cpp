@@ -34,18 +34,18 @@ Shape::Shape(const std::vector<GLfloat>& vertices,
             ((data & NORMALS) == NORMALS) * 3 +
             ((data & TEXTURES) == TEXTURES) * 2;
 
-        if(size >= 3) {
+        if((data & VERTICES) == VERTICES) {
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)0);
             glEnableVertexAttribArray(0);
         }
 
-        if(size >= 6) {
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        if((data & NORMALS) == NORMALS) {
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)(3 * ((data & VERTICES) == VERTICES) * sizeof(GLfloat)));
             glEnableVertexAttribArray(1);
         }
 
-        if(size >= 8) {
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+        if((data & TEXTURES) == TEXTURES) {
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, size * sizeof(GLfloat), (GLvoid*)((3 * ((data & VERTICES) == VERTICES) + 3 * ((data & NORMALS) == NORMALS)) * sizeof(GLfloat)));
             glEnableVertexAttribArray(2);
         }
     }

@@ -12,8 +12,9 @@ GameView::GameView(const Model& model) :
         model(model),
         solid_shader("solid_shader.vert", "solid_shader.frag"),
         textured_shader("textured_shader.vert", "textured_shader.frag"),
-        camera(),
+        camera({0, 0, -6}, {0, 0, 1}, 0),
         skybox(skybox_vertices, skybox_indices, Shape::VERTICES | Shape::NORMALS | Shape::TEXTURES),
+        wooden_texture("wood.jpg"), 
         skybox_texture("skybox.jpg") {
     
     
@@ -39,30 +40,19 @@ void GameView::onUpdate(const BasicEventArgs& args) {
 }
 
 void GameView::doDrawing() {
-    {   
-        const auto guard = ScopeBind::guard(skybox_texture);
-        textured_shader.use();
-        textured_shader.setUniform("texture_sampler", skybox_texture.get_id());
-        skybox.draw(glm::translate(glm::mat4(1), camera.getPosition()), textured_shader);
-    }
-    setLight({-2.5, 4, 0.5}, {1, 1, 1}, {solid_shader, textured_shader});
     camera.begin({solid_shader, textured_shader});
+    setLight({-2.5, 4, 0.5}, {1, 1, 1}, {solid_shader, textured_shader});
+    draw_textured(skybox, skybox_texture, camera.getPosition());
 
-    draw_stable_shapes();
-    draw_original_and_copy({0, 0, -2});
+    draw_textured(model[Model::HammerShapes::BASE], wooden_texture);
+    draw_textured(model[Model::HammerShapes::HOLDER], wooden_texture);
+    draw_textured(model[Model::HammerShapes::HOLDER], wooden_texture, {0, 0, -2});
     draw_animated({0, 0, 2});
 }
-
-void GameView::draw_stable_shapes() const {
-    for(const auto id : {Model::HammerShapes::BASE})
-        model[id].draw({0, 0, 0}, solid_shader);
-}
-
-void GameView::draw_original_and_copy(const glm::vec3& offset) const {
-    for(const auto id : {Model::HammerShapes::HOLDER}) {
-        model[id].draw({0, 0, 0}, solid_shader);
-        model[id].draw(offset, solid_shader);
-    }
+void GameView::draw_textured(const Shape& shape, const Texture& texture, const glm::vec3& offset) const {
+    const auto guard = ScopeBind::guard(texture);
+    textured_shader.setUniform("texture_sampler", texture.get_id());
+    shape.draw(offset, textured_shader);
 }
 
 void GameView::draw_animated(const glm::vec3& offset) const {
@@ -73,8 +63,7 @@ void GameView::draw_animated(const glm::vec3& offset) const {
     model[Model::HammerShapes::HANDLE].draw(hammer_rotation, solid_shader);
     model[Model::HammerShapes::HEAD].draw(hammer_rotation, solid_shader);
 
-    const auto target_push = glm::translate(glm::mat4(1), glm::vec3(0, 0, model.getPush()));
-    model[Model::HammerShapes::TARGET_BASE].draw(target_push, solid_shader);
-    model[Model::HammerShapes::TARGET].draw(target_push, solid_shader);
-    model[Model::HammerShapes::TARGET].draw(target_push * glm::translate(glm::mat4(1), offset), solid_shader);
+    draw_textured(model[Model::HammerShapes::TARGET_BASE], wooden_texture, glm::vec3(0, 0, model.getPush()));
+    model[Model::HammerShapes::TARGET].draw(glm::vec3(0, 0, model.getPush()), solid_shader);
+    model[Model::HammerShapes::TARGET].draw(glm::vec3(0, 0, model.getPush()) + offset, solid_shader);
 }

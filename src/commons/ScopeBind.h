@@ -42,7 +42,7 @@ class ScopeBindShape {
 class ScopeBindTexture {
     public:
         ScopeBindTexture(const Texture& t) {
-            glActiveTexture(t.texture_id);
+            glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, t.texture);
         }
         ~ScopeBindTexture() {

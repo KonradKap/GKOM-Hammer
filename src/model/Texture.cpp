@@ -7,15 +7,12 @@
 
 #include "commons/ScopeBind.h"
 
-int Texture::index = 0;
-
 Texture::Texture() : 
-        texture(),
-        texture_id() {
+        texture() {
 }
+
 Texture::Texture(const char* path) :
-        texture(),
-        texture_id(GL_TEXTURE0 + index++) {
+        texture() {
 
     int width;
     int height;
@@ -42,10 +39,9 @@ Texture::~Texture() {
 }
 
 void swap(Texture& lhs, Texture& rhs) {
-    std::swap(lhs.texture_id, rhs.texture_id);
     std::swap(lhs.texture, rhs.texture);
 }
 
 GLuint Texture::get_id() const {
-    return texture_id;
+    return GL_TEXTURE0;
 }

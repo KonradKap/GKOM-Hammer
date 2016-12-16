@@ -22,5 +22,5 @@ void main()
     float brightness = dot(normal, surface_to_light) / (length(surface_to_light) * length(normal));
     brightness = clamp(brightness, 0, 1);
 
-    color = vec4(brightness * light_color * material_color.rgb, 1.0) + vec4(0.1, 0.1, 0.1, 1.0);
+    color = vec4(brightness * light_color * material_color.rgb, 1.0) + vec4((0.3, 0.3, 0.3) * material_color.rgb, 1.0);
 }

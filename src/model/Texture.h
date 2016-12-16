@@ -15,9 +15,7 @@ class Texture {
 
         GLuint get_id() const;
     private:
-        static int index;
         Texture();
 
         GLuint texture;
-        GLuint texture_id;
 };

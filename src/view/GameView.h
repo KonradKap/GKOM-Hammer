@@ -7,8 +7,7 @@
 #include "view/Shader.h"
 #include "model/Shape.h"
 #include "model/Texture.h"
-
-class Model;
+#include "model/Model.h"
 
 class GameView : public View {
     public:
@@ -22,12 +21,17 @@ class GameView : public View {
         Shader textured_shader;
         Camera camera;
         Shape skybox;
+        Texture wooden_texture;
         Texture skybox_texture;
 
         void onUpdate(const BasicEventArgs& args);
 
         void doDrawing();
-
+        
+        void draw_textured(
+                const Shape& shape, 
+                const Texture& texture, 
+                const glm::vec3& offset = {0, 0, 0}) const;
         void draw_stable_shapes() const;
         void draw_original_and_copy(const glm::vec3& offset) const;
         void draw_animated(const glm::vec3& offset) const;
