@@ -41,7 +41,7 @@ class Model : public LoopableAdapter {
         static constexpr const float ROTATION_SPEED = 4.0f;
 
         float push;
-        static constexpr const float PUSH_SPEED = 0.2f;
+        static constexpr const float PUSH_SPEED = 0.1f;
 
         bool target;
         bool hitting;

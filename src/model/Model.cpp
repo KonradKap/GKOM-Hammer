@@ -52,22 +52,26 @@ float Model::getAngle() const {
 void Model::onUpdate(const BasicEventArgs& args) {
     if(hitting) {
         angle += ROTATION_SPEED;
-        if(angle > 0.0f) {
+        if(angle > 0.0f) 
             hitting = false;
-            target = !target;
-        }
+        
     } else {
         angle -= ROTATION_SPEED;
         if(angle < -180.0f) {
             hitting = true;
+            target = !target;
         }
     }
 
     if(target) {
-        if(push < 0.0f)
-            push += PUSH_SPEED;
-    } else {
-        if(push > -2.0f)
+        if(push > 0.0f)
             push -= PUSH_SPEED;
+        else 
+            push = 0.0f;
+    } else {
+        if(push < 1.0f)
+            push += PUSH_SPEED;
+        else
+            push = 1.0f;
     }
 }

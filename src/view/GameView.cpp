@@ -46,8 +46,8 @@ void GameView::doDrawing() {
 
     draw_textured(model[Model::HammerShapes::BASE], wooden_texture);
     draw_textured(model[Model::HammerShapes::HOLDER], wooden_texture);
-    draw_textured(model[Model::HammerShapes::HOLDER], wooden_texture, {0, 0, -2});
-    draw_animated({0, 0, 2});
+    draw_textured(model[Model::HammerShapes::HOLDER], wooden_texture, {0, 0, 1});
+    draw_animated({0, 0, 1});
 }
 void GameView::draw_textured(const Shape& shape, const Texture& texture, const glm::vec3& offset) const {
     const auto guard = ScopeBind::guard(texture);
@@ -56,7 +56,7 @@ void GameView::draw_textured(const Shape& shape, const Texture& texture, const g
 }
 
 void GameView::draw_animated(const glm::vec3& offset) const {
-    const glm::vec3 rotation_point{0, 1.5, 0};
+    const glm::vec3 rotation_point{0, 0.5, 0};
     auto hammer_rotation = glm::translate(glm::mat4(1), rotation_point);
     hammer_rotation = glm::rotate(hammer_rotation, glm::radians(model.getAngle()), glm::vec3(0, 0, 1));
     hammer_rotation = glm::translate(hammer_rotation, -rotation_point);
@@ -65,5 +65,5 @@ void GameView::draw_animated(const glm::vec3& offset) const {
 
     draw_textured(model[Model::HammerShapes::TARGET_BASE], wooden_texture, glm::vec3(0, 0, model.getPush()));
     model[Model::HammerShapes::TARGET].draw(glm::vec3(0, 0, model.getPush()), solid_shader);
-    model[Model::HammerShapes::TARGET].draw(glm::vec3(0, 0, model.getPush()) + offset, solid_shader);
+    model[Model::HammerShapes::TARGET].draw(glm::vec3(0, 0, model.getPush()) - offset, solid_shader);
 }

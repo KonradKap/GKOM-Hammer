@@ -9,7 +9,5 @@
 
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
-
 constexpr char GAME_TITLE[] = "Kappa";
 
